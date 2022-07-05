@@ -1,6 +1,6 @@
 instal:
 	bison -d code_bison.y -o app.cpp
-	flex -o app_lex.cpp lex_code.l
+	flex -o app_lex.cpp project.lex
 	g++ app.cpp app_lex.cpp
 
 clean:
