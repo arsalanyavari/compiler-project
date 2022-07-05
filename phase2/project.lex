@@ -1,4 +1,4 @@
-%option noyywrap
+
 
 %{
     //Definitions
@@ -91,7 +91,7 @@
     }
     }
 
-\"[ -~]*\"  {printf("TOKEN_STRINGCONST %s\n", yytext);return TOKEN_STRINGCONST}
+\"[ -~]*\"  {printf("TOKEN_STRINGCONST %s\n", yytext);return TOKEN_STRINGCONST;}
 
 \'([ -~])\' {printf("TOKEN_CHARCONST %s\n", yytext);return TOKEN_CHARCONST;}
 \'(\\"n")\' {printf("TOKEN_CHARCONST %s\n", yytext);return TOKEN_CHARCONST;}
