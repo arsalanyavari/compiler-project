@@ -34,6 +34,9 @@ void print_preorder(Node* head, int mode)
     else
         cout << tmp->name << endl;
 
+    if (tmp->children.size()==0)
+        return;
+
     for (int i=0 ; i < tmp->children.size() ; i++ )
     {
         print_preorder(tmp->children[i], mode);
@@ -114,7 +117,6 @@ void print_preorder(Node* head, int mode)
 %left TOKEN_LP TOKEN_RP 
 %left TOKEN_LB TOKEN_RB 
 %left TOKEN_LCB TOKEN_RCB
-//%left TOKEN_INT TOKEN_BOOL TOKEN_CHAR TOKEN_STRING
 %right TOKEN_COMMA
 
 
