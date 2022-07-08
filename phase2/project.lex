@@ -1,10 +1,11 @@
-
-
 %{
     //Definitions
     #include <iostream>
+    #include "Node.h"
+    #include <vector>
     #include "app.hpp"
     #include <stdlib.h>
+
     using namespace std;
     int line_number = 1;
     char* tmp;
