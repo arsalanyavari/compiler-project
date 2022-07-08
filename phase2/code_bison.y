@@ -24,24 +24,36 @@
 // Node* Node* temp4 = new Node();
 
 
-
+int step = 0;
 
 void print_preorder(Node* head, int mode)
 {
     Node* tmp = head;
+    bool leaf = tmp->children.size()>0?false:true;
+    for(int i=0; i<step; i++)
+        cout << "\t";
     if (mode == 0)
-        cout << tmp->data <<endl;
+        if(leaf)
+        {
+            cout << "\e[0;32m" << tmp->data <<endl << "\e[0m";
+        }
+        else
+            cout << "\e[0;34m" << tmp->data <<endl << "\e[0m";
     else
-        cout << tmp->name << endl;
+        cout << "\e[0;31m" << tmp->name << endl << "\e[0m";
 
     if (tmp->children.size()==0)
-        return;
-
+        {
+            step--;
+            return;
+        }
     for (int i=0 ; i < tmp->children.size() ; i++ )
     {
+        step++;
         print_preorder(tmp->children[i], mode);
     }
 
+    step--;
     return;
 }
 
@@ -51,7 +63,7 @@ void print_preorder(Node* head, int mode)
 
 
 %union {
-    char str[2000];
+    char* str;
     int number;
     Node* node;    
     
@@ -168,45 +180,46 @@ void print_preorder(Node* head, int mode)
     program:    // class program {}
                 TOKEN_CLASS TOKEN_PROGRAMCLASS TOKEN_LCB decl TOKEN_RCB
                 {
-                    $$ = new Node();
+                    $$ =         new Node();
                     $$->name =   strdup(" < func_name > ");
                     $$->data =   strdup(" < func_name > ");
 
-                    Node* temp2 = new Node();
-                    temp2->name =   strdup("TOKEN_MAINFUNC");
+                    Node* temp2 =   new Node();
+                    temp2->name =   strdup("TOKEN_CLASS");
                     temp2->data =   strdup($1);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
-                    Node* temp3 = new Node();
-                    temp3->name =   strdup("TOKEN_MAINFUNC");
+                    Node* temp3 =   new Node();
+                    temp3->name =   strdup("TOKEN_PROGRAMCLASS");
                     temp3->data =   strdup($2);
-                    temp3->parent = $$;
+                    //temp3->parent = $$;
                       
                     $$->add_child(temp3);
 
                     Node* temp4 = new Node();
-                    temp4->name =   strdup("TOKEN_MAINFUNC");
+                    temp4->name =   strdup("TOKEN_LCB");
                     temp4->data =   strdup($3);
-                    temp4->parent = $$;
+                    //temp4->parent = $$;
                       
                     $$->add_child(temp4);
 
-                    $4->parent = $$;
+                    //$4->parent = $$;
                     $$->add_child($4);
 
                     Node* temp = new Node();
-                    temp->name =   strdup("TOKEN_MAINFUNC");
+                    temp->name =   strdup("TOKEN_RCB");
                     temp->data =   strdup($5);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
 
+                    cout << "\n\n";
                     print_preorder($$, running_mode);
 
-                    //printf("<program> %s %s %s %s %s\n", running_mode ? "TOKEN_CLASS" : $1, running_mode ? "TOKEN_PROGRAMCLASS" : $2, running_mode ? "TOKEN_LCB" : $3, $4, running_mode ? "TOKEN_RCB" : $5);
+                    // printf("<program> %s %s %s %s %s\n", running_mode ? "TOKEN_CLASS" : $1, running_mode ? "TOKEN_PROGRAMCLASS" : $2, running_mode ? "TOKEN_LCB" : $3, $4, running_mode ? "TOKEN_RCB" : $5);
                 }
                 ;
     decl:
@@ -216,10 +229,10 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < decl > ");
                     $$->data =   strdup(" < decl > ");
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                     //sprintf($$, "%s %s", $1, $2);
@@ -230,7 +243,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < decl > ");
                     $$->data =   strdup(" < decl > ");
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s", $1);
@@ -240,14 +253,14 @@ void print_preorder(Node* head, int mode)
     decl_method:
                 decl_method method_decl
                 {
-                    $$ = new Node();
+                    $$ = new     Node();
                     $$->name =   strdup(" < decl_method > ");
                     $$->data =   strdup(" < decl_method > ");
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                     //sprintf($$, "%s %s", $1, $2);
@@ -259,7 +272,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < decl_method > ");
                     $$->data =   strdup(" < decl_method > ");
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s", $1);
@@ -275,19 +288,19 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < field_decl > ");
                     $$->data =   strdup(" < field_decl > ");
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_SEMICOLON");
                     temp->data =   strdup($4);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
@@ -306,14 +319,14 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_COMMA");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     //sprintf($$, "%s %s %s", running_mode ? "TOKEN_COMMA" : $1, $2, $3);
@@ -329,31 +342,31 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_LB");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_RB");
                     temp2->data =   strdup($3);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
                     Node* temp3 = new Node();
                     temp3->name =   strdup("TOKEN_COMMA");
                     temp3->data =   strdup($4);
-                    temp3->parent = $$;
+                    //temp3->parent = $$;
                       
                     $$->add_child(temp3);
 
-                    $5->parent = $$;
+                    //$5->parent = $$;
                     $$->add_child($5);
 
-                    $6->parent = $$;
+                    ////$2->parent = $$;
                     $$->add_child($6);
 
                     //sprintf($$, "%s %s %s %s %s %s", running_mode ? "TOKEN_LB" : $1, $2, running_mode ? "TOKEN_RB" : $3, running_mode ? "TOKEN_COMMA" : $4, $5, $6); 
@@ -369,23 +382,31 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_LB");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                     Node* temp2 = new Node();
                     temp2->name =strdup("TOKEN_RB");
                     temp2->data =      strdup($3);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
                     //sprintf($$, "%s %s %s", running_mode ? "TOKEN_LB" : $1, $2, running_mode ? "TOKEN_RB" : $3);
                 }
-                | /*epsilon*/ {  }
+                | /*epsilon*/ { $$ = new Node();
+                                $$->name =   strdup(" < multi_field > ");
+                                $$->data =   strdup(" < multi_field > ");
+
+                                Node* temp = new Node();
+                                temp->name = strdup("");                 
+                                temp->data = strdup("");
+                                $$->add_child(temp);                 
+                }
                 ;
 
 
@@ -397,31 +418,31 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < method_decl > ");
                     $$->data =   strdup(" < method_decl > ");
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                     Node* temp2 = new Node();
-                    temp2->name =   strdup("TOKEN_RP");
+                    temp2->name =   strdup("TOKEN_LP");
                     temp2->data =   strdup($3);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
-                    $4->parent = $$;
+                    //$4->parent = $$;
                     $$->add_child($4);
 
 
                     Node* temp3 = new Node();
                     temp3->name =   strdup("TOKEN_RP");
                     temp3->data =   strdup($5);
-                    temp3->parent = $$;
+                    //temp3->parent = $$;
                       
                     $$->add_child(temp3);
 
-                    $6->parent = $$;
+                    ////$2->parent = $$;
                     $$->add_child($6);
 
 //                    sprintf($$, "%s %s %s %s %s %s", $1, $2, running_mode ? "TOKEN_LP" : $3, $4, running_mode ? "TOKEN_RP" : $5, $6);
@@ -439,7 +460,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_VOIDTYPE");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
@@ -452,7 +473,7 @@ void print_preorder(Node* head, int mode)
                     $$->data =   strdup(" < header > ");
 
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s", $1);
@@ -467,7 +488,7 @@ void print_preorder(Node* head, int mode)
                     $$->data =   strdup(" < func_name > ");
 
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s", $1);
@@ -481,7 +502,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_MAINFUNC");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
@@ -497,7 +518,7 @@ void print_preorder(Node* head, int mode)
                     $$->data =   strdup(" < func_args > ");
 
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s", $1);
@@ -509,17 +530,17 @@ void print_preorder(Node* head, int mode)
                     $$->data =   strdup(" < func_args > ");
 
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_COMMA");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
 
@@ -533,27 +554,27 @@ void print_preorder(Node* head, int mode)
                     $$->data =   strdup(" < func_args > ");
 
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_COMMA");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_COMMA");
                     temp2->data =   strdup($4);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
-                    $5->parent = $$;
+                    //$5->parent = $$;
                     $$->add_child($5);
 
                     //sprintf($$, "%s %s %s %s %s", $1, running_mode ? "TOKEN_COMMA" : $2, $3, running_mode ? "TOKEN_COMMA" : $4, $5);
@@ -565,42 +586,53 @@ void print_preorder(Node* head, int mode)
                     $$->data =   strdup(" < func_args > ");
 
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_COMMA");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_COMMA");
                     temp2->data =   strdup($4);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
-                    $5->parent = $$;
+                    //$5->parent = $$;
                     $$->add_child($5);
 
                     Node* temp3 = new Node();
                     temp3->name =   strdup("TOKEN_COMMA");
                     temp3->data =   strdup($6);
-                    temp3->parent = $$;
+                    //temp3->parent = $$;
                       
                     $$->add_child(temp3);
 
-                    $7->parent = $$;
+                    //$7->parent = $$;
                     $$->add_child($7);
 
                     //sprintf($$, "%s %s %s %s %s %s %s", $1, running_mode ? "TOKEN_COMMA" : $2, $3, running_mode ? "TOKEN_COMMA" : $4, $5, running_mode ? "TOKEN_COMMA" : $6, $7);
                 }
-                | /*epsilon*/ { }
+                | /*epsilon*/ { 
+
+                                $$ = new Node();
+                                $$->name =   strdup(" < func_args > ");
+                                $$->data =   strdup(" < func_args > ");
+
+                                Node* temp = new Node();
+                                temp->name = strdup("");                 
+                                temp->data = strdup("");
+                                $$->add_child(temp);
+
+                }
                 ;
 
     arg:    //int a//bool b
@@ -611,11 +643,11 @@ void print_preorder(Node* head, int mode)
                     $$->data =   strdup(" < arg > ");
 
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                     //sprintf($$ , "%s %s" , $1 , $2);
@@ -632,20 +664,20 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_LCB");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     Node* temp3 = new Node();
                     temp3->name =   strdup("TOKEN_RCB");
                     temp3->data =   strdup($4);
-                    temp3->parent = $$;
+                    //temp3->parent = $$;
                       
                     $$->add_child(temp3);
 
@@ -662,22 +694,31 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < var_decl > ");
                     $$->data =   strdup(" < var_decl > ");
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
                     
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_SEMICOLON");
                     temp->data =   strdup($3);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
                     
                     //sprintf($$, "%s %s %s" , $1 , $2 , running_mode ? "TOKEN_SEMICOLON" : $3);
                 }
-                |/*epsilon*/ { }
+                |/*epsilon*/ {
+                                $$ = new Node();
+                                $$->name =   strdup(" < var_decl > ");
+                                $$->data =   strdup(" < var_decl > ");
+
+                                Node* temp = new Node();
+                                temp->name = strdup("");                 
+                                temp->data = strdup("");
+                                $$->add_child(temp);
+                 }
                 ;
 
     statement:
@@ -687,19 +728,19 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < statement > ");
                     $$->data =   strdup(" < statement > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
                     
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_SEMICOLON");
                     temp->data =   strdup($4);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
@@ -712,13 +753,13 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < statement > ");
                     $$->data =   strdup(" < statement > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_SEMICOLON");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
@@ -733,29 +774,29 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_IFCONDITION");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_RP");
                     temp2->data =   strdup($2);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
 
                     Node* temp3 = new Node();
                     temp3->name =   strdup("TOKEN_LP");
                     temp3->data =   strdup($4);
-                    temp3->parent = $$;
+                    //temp3->parent = $$;
                       
                     $$->add_child(temp3);
 
-                    $5->parent = $$;
+                    //$5->parent = $$;
                     $$->add_child($5);
 
 
@@ -770,33 +811,33 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_RP");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_LP");
                     temp2->data =   strdup($3);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
-                    $4->parent = $$;
+                    //$4->parent = $$;
                     $$->add_child($4);
 
 
                     Node* temp3 = new Node();
                     temp3->name =   strdup("TOKEN_LP");
                     temp3->data =   strdup($5);
-                    temp3->parent = $$;
+                    //temp3->parent = $$;
                       
                     $$->add_child(temp3);
 
-                    $6->parent = $$;
+                    ////$2->parent = $$;
                     $$->add_child($6);
 
 
@@ -811,18 +852,18 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_RETURN");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_SEMICOLON");
                     temp2->data =   strdup($3);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
@@ -838,7 +879,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_BREAKSTMT");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
@@ -846,7 +887,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_SEMICOLON");
                     temp2->data =   strdup($2);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
@@ -861,14 +902,14 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_CONTINUESTMT");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_SEMICOLON");
                     temp2->data =   strdup($2);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
                     //sprintf($$, "%s %s", running_mode ? "TOKEN_CONTINUESTMT" : $1 , running_mode ? "TOKEN_SEMICOLON" : $2);
@@ -880,12 +921,21 @@ void print_preorder(Node* head, int mode)
                     $$->data =   strdup(" < statement > ");
 
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s", $1);
                 }
-                |/*epsilon*/ { }
+                |/*epsilon*/ {
+                                $$ = new Node();
+                                $$->name =   strdup(" < statement > ");
+                                $$->data =   strdup(" < statement > ");
+
+                                Node* temp = new Node();
+                                temp->name = strdup("");                 
+                                temp->data = strdup("");
+                                $$->add_child(temp);
+                 }
                 ;
 
     ret_stmt:
@@ -895,12 +945,21 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < ret_stmt > ");
                     $$->data =   strdup(" < ret_stmt > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s" , $1);
                 }
-                |/*epsilon*/ { }
+                |/*epsilon*/ { 
+                                $$ = new Node();
+                                $$->name =   strdup(" < ret_stmt > ");
+                                $$->data =   strdup(" < ret_stmt > ");
+
+                                Node* temp = new Node();
+                                temp->name = strdup("");                 
+                                temp->data = strdup("");
+                                $$->add_child(temp);
+                }
                 ;
 
     else_stmt:  //else {}
@@ -913,16 +972,25 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ELSECONDITION");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                     //sprintf($$, "%s %s", running_mode ? "TOKEN_ELSECONDITION" : $1, $2);
                 }
-                |/*epsilon*/ { }
+                |/*epsilon*/ {
+                                $$ = new Node();
+                                $$->name =   strdup(" < else_stmt > ");
+                                $$->data =   strdup(" < else_stmt > ");
+
+                                Node* temp = new Node();
+                                temp->name = strdup("");                 
+                                temp->data = strdup("");
+                                $$->add_child(temp);
+                 }
                 ;
 
     location:
@@ -932,7 +1000,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < location > ");
                     $$->data =   strdup(" < location > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s", $1);
@@ -943,23 +1011,23 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < location > ");
                     $$->data =   strdup(" < location > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_LB");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_RB");
                     temp2->data =   strdup($4);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
                     
@@ -977,7 +1045,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ASSIGNOP_ASS");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
 
                     $$->add_child(temp);
@@ -993,7 +1061,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ASSIGNOP_ADD");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
 
                     $$->add_child(temp);
@@ -1009,7 +1077,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ASSIGNOP_SUB");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
 
                     $$->add_child(temp);
@@ -1025,7 +1093,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s", $1);
@@ -1036,7 +1104,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$, "%s", $1);
@@ -1047,7 +1115,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
                     
                     //sprintf($$, "%s", $1);
@@ -1058,17 +1126,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ARITHMATICOP_ADD");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_ARITHMATICOP_ADD" : $2, $3);
@@ -1079,17 +1147,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ARITHMATICOP_SUB");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_ARITHMATICOP_SUB" : $2, $3);
@@ -1100,17 +1168,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ARITHMATICOP_MUL");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_ARITHMATICOP_MUL" : $2, $3);
@@ -1121,17 +1189,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ARITHMATICOP_DIV");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
 //                    sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_ARITHMATICOP_DIV" : $2, $3);
@@ -1142,17 +1210,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ARITHMATICOP_REM");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_ARITHMATICOP_REM" : $2, $3);
@@ -1163,17 +1231,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_RELATIONOP_SE");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_RELATIONOP_SE" : $2, $3);
                 }
@@ -1183,17 +1251,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_RELATIONOP_S");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_RELATIONOP_S" : $2, $3);
                 }
@@ -1203,17 +1271,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_RELATIONOP_B");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_RELATIONOP_B" : $2, $3);
                 }
@@ -1223,17 +1291,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_RELATIONOP_BE");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_RELATIONOP_BE" : $2, $3);
                 }
@@ -1243,17 +1311,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_EQUALITYOP_E");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_EQUALITYOP_E" : $2, $3);
                 }
@@ -1263,17 +1331,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_EQUALITYOP_NE");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_EQUALITYOP_NE" : $2, $3);
                 }
@@ -1283,17 +1351,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_CONDITIONOP_AND");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_CONDITIONOP_AND" : $2, $3);
                 }         
@@ -1303,17 +1371,17 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < expr > ");
                     $$->data =   strdup(" < expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_CONDITIONOP_OR");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_CONDITIONOP_OR" : $2, $3);
                 }
@@ -1326,11 +1394,11 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ARITHMATICOP_SUB");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                     //sprintf($$, "%s %s", running_mode ? "TOKEN_ARITHMATICOP_SUB" : $1, $2);
@@ -1344,11 +1412,11 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_LOGICOP");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
                    // sprintf($$, "%s %s", running_mode ? "TOKEN_LOGICOP" : $1, $2);
@@ -1362,17 +1430,17 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_LP");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
                     
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_RP");
                     temp2->data =   strdup($3);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
@@ -1387,23 +1455,23 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < method_call > ");
                     $$->data =   strdup(" < method_call > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_LP");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_RP");
                     temp2->data =   strdup($4);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
@@ -1420,27 +1488,27 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_CALLOUT");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 
                     Node* temp2 = new Node();
                     temp2->name =   strdup("TOKEN_LP");
                     temp2->data =   strdup($2);
-                    temp2->parent = $$;
+                    //temp2->parent = $$;
                       
                     $$->add_child(temp2);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
-                    $4->parent = $$;
+                    //$4->parent = $$;
                     $$->add_child($4);
 
                     Node* temp3 = new Node();
                     temp3->name =   strdup("TOKEN_LP");
                     temp3->data =   strdup($5);
-                    temp3->parent = $$;
+                    //temp3->parent = $$;
                       
                     $$->add_child(temp3);
 
@@ -1456,12 +1524,21 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < multi_expr > ");
                     $$->data =   strdup(" < multi_expr > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$ , "%s" , $1);
                 }
-                |/*epsilon*/ { }
+                |/*epsilon*/ {
+                                $$ = new Node();
+                                $$->name =   strdup(" < multi_expr > ");
+                                $$->data =   strdup(" < multi_expr > ");
+
+                                Node* temp = new Node();
+                                temp->name = strdup("");                 
+                                temp->data = strdup("");
+                                $$->add_child(temp);
+                 }
                 ;
 
     multi_expr_inner://1,2,a,b,c//1,b
@@ -1471,7 +1548,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < multi_expr_inner > ");
                     $$->data =   strdup(" < multi_expr_inner > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$ , "%s" , $1);
@@ -1482,18 +1559,18 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < multi_expr_inner > ");
                     $$->data =   strdup(" < multi_expr_inner > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_COMMA");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
 
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_COMMA" : $2 , $3);
@@ -1511,18 +1588,27 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_COMMA");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
 
                     $$->add_child(temp);
 
-                    $2->parent = $$;
+                    //$2->parent = $$;
                     $$->add_child($2);
 
 
                     //sprintf($$, "%s %s", running_mode ? "TOKEN_COMMA" : $1, $2);
                 }
-                | /*epsilon*/ { }
+                | /*epsilon*/ {
+                                $$ = new Node();
+                                $$->name =   strdup(" < multi_callout_args > ");
+                                $$->data =   strdup(" < multi_callout_args > ");
+
+                                Node* temp = new Node();
+                                temp->name = strdup("");                 
+                                temp->data = strdup("");
+                                $$->add_child(temp);
+                 }
                 ;
 
     multi_callout_args_inner:
@@ -1532,7 +1618,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < multi_callout_args_inner > ");
                     $$->data =   strdup(" < multi_callout_args_inner > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$ , "%s", $1);
@@ -1543,18 +1629,18 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < multi_callout_args_inner > ");
                     $$->data =   strdup(" < multi_callout_args_inner > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_COMMA");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
 
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     
@@ -1570,7 +1656,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < callout_args > ");
                     $$->data =   strdup(" < callout_args > ");
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$ , "%s", $1);
@@ -1581,7 +1667,7 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < callout_args > ");
                     $$->data =   strdup(" < callout_args > ");
                     
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     //sprintf($$ , "%s", $1);
@@ -1599,7 +1685,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_INTTYPE");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
 
                     $$->add_child(temp);
@@ -1615,7 +1701,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_BOOLEANTYPE");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
 
                     $$->add_child(temp);
@@ -1631,7 +1717,7 @@ void print_preorder(Node* head, int mode)
                     $$ = new Node();
                     $$->name =   strdup(" < multi_id > ");
                     $$->data =   strdup(" < multi_id > ");
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
                     //sprintf($$ , "%s", $1);
                     //cout << "22222222222222222222";
@@ -1642,18 +1728,18 @@ void print_preorder(Node* head, int mode)
                     $$->name =   strdup(" < multi_id > ");
                     $$->data =   strdup(" < multi_id > ");
 
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
 
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_COMMA");
                     temp->data =   strdup($2);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
 
                     $$->add_child(temp);
 
-                    $3->parent = $$;
+                    //$3->parent = $$;
                     $$->add_child($3);
 
                     //sprintf($$, "%s %s %s", $1, running_mode ? "TOKEN_COMMA" : $2, $3);
@@ -1667,7 +1753,7 @@ void print_preorder(Node* head, int mode)
                     $$ = new Node();
                     $$->name =   strdup(" < literal > ");
                     $$->data =   strdup(" < literal > ");
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
                     //sprintf($$ , "%s", $1);
                 }
@@ -1676,7 +1762,7 @@ void print_preorder(Node* head, int mode)
                     $$ = new Node();
                     $$->name =   strdup(" < literal > ");
                     $$->data =   strdup(" < literal > ");
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
                     //sprintf($$ , "%s", $1);
                 }
@@ -1685,7 +1771,7 @@ void print_preorder(Node* head, int mode)
                     $$ = new Node();
                     $$->name =   strdup(" < literal > ");
                     $$->data =   strdup(" < literal > ");
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
                     //sprintf($$ , "%s", $1);
                 }
@@ -1697,7 +1783,7 @@ void print_preorder(Node* head, int mode)
                     $$ = new Node();
                     $$->name =   strdup(" < int_literal > ");
                     $$->data =   strdup(" < int_literal > ");
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
                     //sprintf($$ , "%s", $1);
                 }
@@ -1706,7 +1792,7 @@ void print_preorder(Node* head, int mode)
                     $$ = new Node();
                     $$->name =   strdup(" < int_literal > ");
                     $$->data =   strdup(" < int_literal > ");
-                    $1->parent = $$;
+                    //$1->parent = $$;
                     $$->add_child($1);
                     //sprintf($$ , "%s", $1);
                 }
@@ -1720,7 +1806,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_ID");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
             
@@ -1736,7 +1822,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_DECIMALCONST");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
                     //sprintf($$ , "%s", running_mode ? "TOKEN_DECIMALCONST" : $1);
@@ -1751,7 +1837,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_HEXADECIMALCONST");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
                     //sprintf($$ , "%s", running_mode ? "TOKEN_HEXADECIMALCONST" : $1);
@@ -1766,7 +1852,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_BOOLEANCONST");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
                     //sprintf($$ , "%s", running_mode ? "TOKEN_BOOLEANCONST" : $1);
@@ -1781,7 +1867,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_CHARCONST");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
                     //sprintf($$ , "%s", running_mode ? "TOKEN_CHARCONST" : $1);
@@ -1796,7 +1882,7 @@ void print_preorder(Node* head, int mode)
                     Node* temp = new Node();
                     temp->name =   strdup("TOKEN_STRINGCONST");
                     temp->data =   strdup($1);
-                    temp->parent = $$;
+                    //temp->parent = $$;
                      
                     $$->add_child(temp);
 

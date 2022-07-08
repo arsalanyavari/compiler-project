@@ -8,7 +8,7 @@ class Node{
         int h;
         char *name;
         char *data;
-        Node *parent;
+        // Node *parent;
         vector<Node *> children;
 
         Node()
