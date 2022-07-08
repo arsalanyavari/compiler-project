@@ -4,4 +4,4 @@ install:
 	g++ app.cpp app_lex.cpp
 
 clean:
-	rm -rf a.out app.cpp app_lex.cpp app.hpp
+	rm -rf a.out app.cpp app_lex.cpp app.hpp output.txt
